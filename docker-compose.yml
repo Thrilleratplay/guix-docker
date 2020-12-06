@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  guix-base:
+    image: guix-base:${GUIX_VERSION}
+    network_mode: bridge
+    build:
+      context: ./base
+      args:
+        - GUIX_VERSION=${GUIX_VERSION}
+    logging:
+      options:
+        max-size: 1m
+        max-file: "3"
+  guix-build:
+    image: guix-build:${BOOTSTRAP_GUIX_COMMIT_ID}
+    network_mode: bridge
+    build:
+      context: ./build
+      args:
+        - GUIX_VERSION=${GUIX_VERSION}
+        - BOOTSTRAP_GUIX_COMMIT_ID=${BOOTSTRAP_GUIX_COMMIT_ID}
+    depends_on:
+      - guix-base
+    logging:
+      options:
+        max-size: 1m
+        max-file: "3"

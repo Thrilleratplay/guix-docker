@@ -1,0 +1,8 @@
+ftp-data        20/tcp
+ftp             21/tcp
+tftp            69/udp
+sftp            115/tcp
+http            80/tcp          www             # WorldWideWeb HTTP
+http            80/udp                          # HyperText Transfer Protocol
+https           443/tcp                         # http protocol over TLS/SSL
+https           443/udp
