@@ -9,6 +9,12 @@ Based on the work of daym
 * [GitHub](https://github.com/daym)
   * https://github.com/daym/heads-guix/tree/wip-musl
 
+### Clone
+
+```bash
+git clone --recurse-submodules https://github.com/Thrilleratplay/guix-docker
+```
+
 ### Build and start
 
 ```bash
@@ -17,12 +23,6 @@ docker-compose up --build --no-start
 
 # Start guild-build container
 docker start guix-build_1
-```
-
-### Pull channels
-
-```bash
-docker exec guix-build_1 guix pull /root/.config/guix/channels.scm
 ```
 
 ### Search Heads

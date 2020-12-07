@@ -19,8 +19,12 @@ services:
       args:
         - GUIX_VERSION=${GUIX_VERSION}
         - BOOTSTRAP_GUIX_COMMIT_ID=${BOOTSTRAP_GUIX_COMMIT_ID}
+    environment:
+      - GUIX_PACKAGE_PATH="/heads-guix/"
     depends_on:
       - guix-base
+    volumes:
+      - "./heads-guix:/heads-guix"
     logging:
       options:
         max-size: 1m

@@ -31,7 +31,8 @@ RUN  ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bi
 
 
 COPY set-mtimes.scm /
-COPY channels.scm /root/.config/guix/channels.scm
+
+VOLUME ["/heads-guix"]
 
 RUN ["/usr/local/bin/guix", "repl", "/set-mtimes.scm"]
 ENTRYPOINT ["/root/.config/guix/current/bin/guix-daemon", "--build-users-group=guixbuild", "--disable-chroot"]

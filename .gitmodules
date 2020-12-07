@@ -1,0 +1,4 @@
+[submodule "heads-guix"]
+	path = heads-guix
+	url = https://github.com/daym/heads-guix
+	branch = wip-musl
