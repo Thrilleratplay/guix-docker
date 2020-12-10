@@ -7,7 +7,7 @@ Based on the work of daym
 * [Gitlab](https://gitlab.com/daym/)
   * https://gitlab.com/daym/guix-on-docker
 * [GitHub](https://github.com/daym)
-  * https://github.com/daym/heads-guix/tree/wip-musl
+  * https://github.com/daym/build_channel/tree/wip-musl
 
 ### Clone
 
@@ -19,20 +19,17 @@ git clone --recurse-submodules https://github.com/Thrilleratplay/guix-docker
 
 ```bash
 # Build via docker-compose
-docker-compose up --build --no-start
-
-# Start guild-build container
-docker start guix-build_1
+docker-compose up
 ```
 
 ### Search Heads
 
 ```bash
-docker exec guix-build_1 guix search heads-
+docker exec guix_1 guix package -L /build_channel/ -s heads-
 ```
 
-### Build heads-dev-cpio
+### Build heads-coreboot
 
 ```bash
-docker exec guix-build_1 guix build --rounds=2 heads-dev-cpio  
+docker exec guix_1 guix build -L /build_channel/ heads-coreboot
 ```

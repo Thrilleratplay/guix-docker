@@ -1,4 +1,4 @@
-[submodule "heads-guix"]
-	path = heads-guix
-	url = https://github.com/daym/heads-guix
+[submodule "build-channel"]
+	path = build-channel
+	url = https://github.com/Thrilleratplay/heads-guix
 	branch = wip-musl

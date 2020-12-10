@@ -1,13 +1,11 @@
 # https://willschenk.com/articles/2019/installing_guix_on_nuc/
 FROM alpine:3.12
 
-ENV ALPINE_PACKAGES="gnupg xz findutils procps git"
-
 ARG GUIX_VERSION
 ENV GUIX_VERSION $GUIX_VERSION
 
 # Add packages required to install Guix during docker build
-RUN apk add --no-cache ${ALPINE_PACKAGES}
+RUN apk add --no-cache gnupg xz
 
 # create users and user group for Guix builder
 RUN addgroup -S guixbuild \
@@ -28,10 +26,11 @@ RUN wget -q -O /tmp/guix-bootstrap.tar.xz https://ftp.gnu.org/gnu/guix/guix-bina
     && mkdir -p /usr/local/bin \
     && ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bin/guix
 
+# XXX: Is this still needed?
+# COPY set-mtimes.scm /
+# RUN ["/usr/local/bin/guix", "repl", "/set-mtimes.scm"]
 
-# Remove packages required to install Guix during docker build
-RUN apk del ${ALPINE_PACKAGES}
+VOLUME ["/build_env"]
+VOLUME ["/build_channel"]
 
-COPY etc/passwd /etc
-COPY etc/group /etc
-COPY etc/services /etc
+ENTRYPOINT ["/root/.config/guix/current/bin/guix-daemon", "--build-users-group=guixbuild", "--disable-chroot"]
