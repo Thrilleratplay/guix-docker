@@ -33,3 +33,10 @@ docker exec guix_1 guix package -L /build_channel/ -s heads-
 ```bash
 docker exec guix_1 guix build -L /build_channel/ heads-coreboot
 ```
+
+## TODO:
+* Look into guix enviroment and manifest
+  * https://guix.gnu.org/manual/en/html_node/Invoking-guix-environment.html
+  * https://trivialfis.github.io/linux/2018/06/10/Using-guix-for-development.html
+  * https://librehacker.com/2020/07/04/guix-manifest-functions/
+* Break down channel packages into manageable sizes 
