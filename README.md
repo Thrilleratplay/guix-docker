@@ -15,11 +15,22 @@ Based on the work of daym
 git clone --recurse-submodules https://github.com/Thrilleratplay/guix-docker
 ```
 
-### Build and start
+### Build and run
 
+via docker
 ```bash
-# Build via docker-compose
-docker-compose up
+docker build --rm -t guix:1.2.0 --build-arg GUIX_VERSION="1.2.0" .
+
+docker run -d \
+    --name guix_1 \
+    -v "./build_channel:/build_channel" \
+    -v "./build_env:/build_env" \
+    guix:1.2.0
+```
+
+via docker-compose
+```bash
+docker-compose up -d
 ```
 
 ### Search Heads
@@ -39,4 +50,4 @@ docker exec guix_1 guix build -L /build_channel/ heads-coreboot
   * https://guix.gnu.org/manual/en/html_node/Invoking-guix-environment.html
   * https://trivialfis.github.io/linux/2018/06/10/Using-guix-for-development.html
   * https://librehacker.com/2020/07/04/guix-manifest-functions/
-* Break down channel packages into manageable sizes 
+* Break down channel packages into manageable sizes
