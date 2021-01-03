@@ -1,11 +1,10 @@
 version: "3.8"
 services:
-  guix:
-    image: guix:${GUIX_VERSION}
+  guix-pack:
+    image: guix-pack:${GUIX_VERSION}
     network_mode: bridge
     volumes:
-      - "./build_channel:/build_channel"
-      - "./build_env:/build_env"
+      - "./output:/output"
     build:
       context: ./
       args:

@@ -30,7 +30,9 @@ RUN wget -q -O /tmp/guix-bootstrap.tar.xz https://ftp.gnu.org/gnu/guix/guix-bina
 # COPY set-mtimes.scm /
 # RUN ["/usr/local/bin/guix", "repl", "/set-mtimes.scm"]
 
-VOLUME ["/build_env"]
-VOLUME ["/build_channel"]
+VOLUME ["/output"]
+
+COPY scripts/pack.sh /
+COPY scripts/coreboot_packages.scm /
 
 ENTRYPOINT ["/root/.config/guix/current/bin/guix-daemon", "--build-users-group=guixbuild", "--disable-chroot"]
