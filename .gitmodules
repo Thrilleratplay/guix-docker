@@ -1,4 +1,0 @@
-[submodule "build_channel"]
-	path = build_channel
-	url = https://github.com/Thrilleratplay/heads-guix
-	branch = wip-musl

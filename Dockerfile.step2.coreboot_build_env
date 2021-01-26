@@ -1,0 +1,3 @@
+FROM coreboot-build-env:latest
+
+USER coreboot

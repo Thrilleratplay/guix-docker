@@ -1,8 +1,12 @@
 # https://willschenk.com/articles/2019/installing_guix_on_nuc/
+
 FROM alpine:3.12
 
-ARG GUIX_VERSION
+ARG GUIX_VERSION=1.2.0
 ENV GUIX_VERSION $GUIX_VERSION
+
+ARG BUILD_FOR_SYSTEM=i686-linux
+ENV BUILD_FOR_SYSTEM $BUILD_FOR_SYSTEM
 
 # Add packages required to install Guix during docker build
 RUN apk add --no-cache gnupg xz
@@ -15,22 +19,19 @@ RUN addgroup -S guixbuild \
       addgroup guixbuilder$i kvm; \
     done
 
+# Import GPG key
 RUN wget -q -O - "https://sv.gnu.org/people/viewgpg.php?user_id=15145" | gpg --import -
 
 # TODO: gpg --verify /tmp/guix-bootstrap.tar.xz
-RUN wget -q -O /tmp/guix-bootstrap.tar.xz https://ftp.gnu.org/gnu/guix/guix-binary-${GUIX_VERSION}.x86_64-linux.tar.xz \
+RUN wget -q -O /tmp/guix-bootstrap.tar.xz https://ftp.gnu.org/gnu/guix/guix-binary-${GUIX_VERSION}.${BUILD_FOR_SYSTEM}.tar.xz \
     && cat /tmp/guix-bootstrap.tar.xz | xz -d | tar x -C / \
     && rm -f /tmp/guix-bootstrap.tar.xz \
     && mkdir -p /root/.config/guix \
     && ln -sf /var/guix/profiles/per-user/root/current-guix /root/.config/guix/current \
     && mkdir -p /usr/local/bin \
-    && ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bin/guix
+    && ln -sf /var/guix/profiles/per-user/root/current-guix/bin/guix /usr/local/bin/guix \
+    && guix archive --authorize < /root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
 
-# XXX: Is this still needed?
-# COPY set-mtimes.scm /
-# RUN ["/usr/local/bin/guix", "repl", "/set-mtimes.scm"]
 
-VOLUME ["/build_env"]
-VOLUME ["/build_channel"]
-
-ENTRYPOINT ["/root/.config/guix/current/bin/guix-daemon", "--build-users-group=guixbuild", "--disable-chroot"]
+VOLUME ["/output"]
+VOLUME ["/scripts"]
