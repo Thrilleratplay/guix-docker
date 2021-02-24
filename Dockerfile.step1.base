@@ -1,6 +1,6 @@
 # https://willschenk.com/articles/2019/installing_guix_on_nuc/
 
-FROM alpine:3.12
+FROM alpine:3.12 AS guix-package-manager
 
 ARG GUIX_VERSION=1.2.0
 ENV GUIX_VERSION $GUIX_VERSION
@@ -10,6 +10,10 @@ ENV BUILD_FOR_SYSTEM $BUILD_FOR_SYSTEM
 
 # Add packages required to install Guix during docker build
 RUN apk add --no-cache gnupg xz
+
+# TODO: create Guix PRs that remove the need for these
+# Add jq and git to modify docker metadata files and look up datetime of commit
+RUN apk add --no-cache jq git
 
 # create users and user group for Guix builder
 RUN addgroup -S guixbuild \
@@ -33,5 +37,6 @@ RUN wget -q -O /tmp/guix-bootstrap.tar.xz https://ftp.gnu.org/gnu/guix/guix-bina
     && guix archive --authorize < /root/.config/guix/current/share/guix/ci.guix.gnu.org.pub
 
 
+FROM guix-package-manager AS release
 VOLUME ["/output"]
 VOLUME ["/scripts"]

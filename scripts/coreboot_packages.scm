@@ -1,5 +1,10 @@
 (specifications->manifest
  '(
+  "bash"
+  "busybox"
+  "coreutils"
+  "util-linux"
+
   "bc"
   "binutils"
   "bison"
@@ -47,4 +52,5 @@
   "wget"
   "xz"
   "zlib"
+
 ))

@@ -27,9 +27,9 @@ Part 1 is will run Guix package manager on top of Alpine Linux.  The image will 
 #### Part 1 - Step 1 - Build Guix Package Manager Image
 
 ```bash
-docker build -t guix-pack-builder:1.2.0 --squash -f ./Dockerfile.step1.base .
+docker build -t guix-pack-builder:1.2.0-1 --target release -f ./Dockerfile.step1.base .
 ```
-The resulting image will be named `guix-pack-builder` and tagged `1.2.0`.
+The resulting image will be named `guix-pack-builder` and tagged `1.2.0-1`.  
 
 #### Part 1 - Step 2 - Generate Build Environment Image
 Using the `guix-pack-builder` image, run ephemeral container to pull a specific commit, generate
@@ -48,7 +48,7 @@ docker run --rm -it \
     -v "$PWD/scripts:/scripts" \
     -v "$PWD/output:/output" \
     -e COMMIT_ID="fc68f611929df574c040e15f6653cee63401f8e2" \
-    guix-pack-builder:1.2.0 \
+    guix-pack-builder:1.2.0-1 \
     /scripts/build.sh
 ```
 
@@ -61,7 +61,10 @@ docker run --rm -it \
 #### Part 2 - Step 1 - Import
 
 ```bash
-cat ./output/coreboot-build.xz  | docker import - coreboot-build-env:latest
+docker load -i output/coreboot-build.tar
+
+# Due to its size, remove the file after importing
+rm output/coreboot-build.tar
 ```
 
 #### Part 2 - Step 2
@@ -79,3 +82,5 @@ create container using newly created image....something something...to finish la
   * Create `musl-cross` Guix package and is buildable from `guix-pack-builder`
 * Create Heads PR to alter make files to test if Guix `musl-cross` exists or, if not, continue to
   build as it currently does.
+* create PR for date of commit in Guix docker pack.
+* create PR for docker name
