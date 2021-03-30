@@ -27,9 +27,9 @@ Part 1 is will run Guix package manager on top of Alpine Linux.  The image will 
 #### Part 1 - Step 1 - Build Guix Package Manager Image
 
 ```bash
-docker build -t guix-pack-builder:1.2.0-1 --target release -f ./Dockerfile.step1.base .
+docker build -t guix-pack-builder:1.2.0-2 --target release -f ./Dockerfile.step1.base .
 ```
-The resulting image will be named `guix-pack-builder` and tagged `1.2.0-1`.  
+The resulting image will be named `guix-pack-builder` and tagged `1.2.0-2`.  
 
 #### Part 1 - Step 2 - Generate Build Environment Image
 Using the `guix-pack-builder` image, run ephemeral container to pull a specific commit, generate
@@ -48,7 +48,7 @@ docker run --rm -it \
     -v "$PWD/scripts:/scripts" \
     -v "$PWD/output:/output" \
     -e COMMIT_ID="fc68f611929df574c040e15f6653cee63401f8e2" \
-    guix-pack-builder:1.2.0-1 \
+    guix-pack-builder:1.2.0-2 \
     /scripts/build.sh
 ```
 
@@ -58,17 +58,25 @@ docker run --rm -it \
 
 ## Part 2 - Build Environment Image
 
-#### Part 2 - Step 1 - Import
+#### Part 2 - Step 1 - Load Docker image
+
+The Docker image file will be in the output directory named `coreboot-build-docker-<SHORT_COMMIT_ID>.tar`,
+ where the `SHORT_COMMIT_ID` is the first 7 characters of the commit id used in step 1.
 
 ```bash
-docker load -i output/coreboot-build.tar
+docker load -i output/coreboot-build-docker-<SHORT_COMMIT_ID>.tar
 
 # Due to its size, remove the file after importing
-rm output/coreboot-build.tar
+rm output/coreboot-build-docker-<SHORT_COMMIT_ID>.tar
 ```
 
-#### Part 2 - Step 2
-create container using newly created image....something something...to finish later.
+#### Part 2 - Step 2 - Running a container
+
+```bash
+docker run -it coreboot-base-env bash
+```
+
+created container using newly created image....something something...to finish later.
 
 
 ### TODO:
