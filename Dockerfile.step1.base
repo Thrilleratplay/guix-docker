@@ -12,7 +12,7 @@ ENV BUILD_FOR_SYSTEM $BUILD_FOR_SYSTEM
 RUN apk add --no-cache gnupg xz
 
 # TODO: create Guix PRs that remove the need for these
-# Add jq and git to modify docker metadata files and look up datetime of commit
+# Add python3, git to modify docker metadata files and look up datetime of commit
 RUN apk add --no-cache python3 git
 
 # create users and user group for Guix builder
