@@ -8,8 +8,13 @@ COMMIT_ID="${COMMIT_ID}"
 BUILD_FOR_SYSTEM="${BUILD_FOR_SYSTEM:=i686-linux}"
 
 BUILD_USERNAME="${BUILD_USERNAME:=builduser}"
-
 DOCKER_IMAGE_NAME="coreboot-base-env"
+
+
+GLIBCUTF8LOCALE=$(find /gnu/store/ -maxdepth 1 -name "*-glibc-utf8-locale*")
+
+export GUIX_LOCPATH="$GLIBCUTF8LOCALE/lib/locale"
+export LC_ALL=en_US.utf8
 
 #############################################################################
 
@@ -23,6 +28,8 @@ guix pull --system=$BUILD_FOR_SYSTEM --commit="$COMMIT_ID"
 
 # update profile
 export GUIX_PROFILE="/root/.config/guix/current"
+#
+
 # shellcheck disable=SC1091
 . "/root/.config/guix/current/etc/profile"
 
@@ -35,7 +42,7 @@ CREATED_DATETIME=$(TZ=UTC git show --date=iso-strict-local --pretty='%cd' "$COMM
 git show --date=iso-strict-local --pretty='%cd' "$COMMIT_ID"
 
 # Create TARBALL pack based on coreboot_packages.scm manifest
-guix pack -f tarball \
+LC_LANG=en_US.utf8 guix pack -f tarball \
           --compression=none \
           --system=$BUILD_FOR_SYSTEM \
           --save-provenance \
@@ -93,6 +100,7 @@ export BASH_LOADABLES_PATH="/lib/bash"
 export TERMINFO_DIRS="/share/terminfo"
 export PKG_CONFIG_PATH="/lib/pkgconfig"
 export PYTHONPATH="/lib/python3.8/site-packages"
+export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
 
 export PS1='\h:\w\$ '
 umask 022
@@ -127,6 +135,10 @@ chmod 1777 "./tmp"
 
 # Create root directory
 mkdir "./root"
+
+# Create /usr directory
+mkdir "./usr/"
+cp -a "./bin" "./usr/"
 
 # Create $BUILD_USERNAME home directory
 mkdir -p "./home/$BUILD_USERNAME/"
