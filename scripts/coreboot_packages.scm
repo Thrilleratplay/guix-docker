@@ -1,15 +1,17 @@
 (specifications->manifest
  '(
-  "coreutils-minimal"
+ "busybox"
 
+
+  "bash-minimal"
   "bc"
-  "binutils"
   "ccache"
   "cmake"
   "crypto++"
   "curl"
   "font-gnu-unifont"
   "gawk"
+  "gcc-toolchain@8.4.0"
   "git-minimal"
   "gmp"
   "go"
@@ -19,16 +21,11 @@
   "lzlib"
   "make"
   "nasm"
+  "nss-certs"
   "openssl"
   "pbzip2" ; parallel bzip2
   "python2-minimal"
-  "patch"
-  "wget"
-  "diffutils"
-  "vim"
-  "bash"
   "bison"
-  "bzip2"
   "flex"
   "libxml2"
   "m4"
