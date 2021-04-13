@@ -80,56 +80,15 @@ cd "$TMPDIR/tmp_layer/gnu/store/" || exit
 
 PROFILE_PATH=$(ls -d ./*profile)
 cd "$PROFILE_PATH" || exit
-mv ./* ../../../
-mv ./.* ../../../
+mv ./* ./.* ../../../
 cd ../../.. || exit
 rmdir "./gnu/store/$PROFILE_PATH" || exit
 
-#######
+# Replace sh with bash
+# unlink "/bin/sh"
+cp "./bin/bash" "./bin/sh"
 
-# /etc/hostname
-echo "$DOCKER_IMAGE_NAME-$COMMIT_ID" > ./etc/hostname
-
-# /etc/profile
-cat << EOF > ./etc/profile
-export PATH="/bin"
-export CMAKE_PREFIX_PATH="/"
-export SSL_CERT_DIR="/etc/ssl/certs"
-export GIT_EXEC_PATH="/libexec/git-core"
-export BASH_LOADABLES_PATH="/lib/bash"
-export TERMINFO_DIRS="/share/terminfo"
-export PKG_CONFIG_PATH="/lib/pkgconfig"
-export PYTHONPATH="/lib/python3.8/site-packages"
-export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
-
-export PS1='\h:\w\$ '
-umask 022
-CHARSET=UTF-8
-LANG=C.UTF-8
-LC_COLLATE=C
-EOF
-
-
-
-# https://tldp.org/LDP/sag/html/adduser.html
-# https://tldp.org/LDP/lame/LAME/linux-admin-made-easy/shadow-file-formats.html
-
-cat << EOF > ./etc/passwd
-root:x:0:0:root:/root:/bin/bash
-$BUILD_USERNAME:x:1000:1000:$BUILD_USERNAME:/home/$BUILD_USERNAME:/bin/bash
-EOF
-
-cat << EOF > ./etc/shadow
-root:!::0:::::
-$BUILD_USERNAME::0:::::
-EOF
-
-
-cat << EOF > ./etc/group
-root:x:0:root
-$BUILD_USERNAME:x:1000:$BUILD_USERNAME
-EOF
-
+# Create tmp directory
 mkdir "./tmp"
 chmod 1777 "./tmp"
 
@@ -138,13 +97,88 @@ mkdir "./root"
 
 # Create /usr directory
 mkdir "./usr/"
-cp -a "./bin" "./usr/"
+mv "./include" "./usr/"
+mv "./lib" "./usr/"
+mv "./bin" "./usr/"
+mv "./src" "./usr/"
+ln -s "./usr/bin" "./bin"
+ln -s "./usr/bin" "./sbin"
+ln -s "./usr/lib" "./lib"
+ln -s "./usr/lib" "./lib64"
 
 # Create $BUILD_USERNAME home directory
 mkdir -p "./home/$BUILD_USERNAME/"
 chmod 755 "./home/$BUILD_USERNAME/"
-touch "./home/$BUILD_USERNAME/.bashrc"
 chown -R 1000:1000 "./home/$BUILD_USERNAME/"
+
+#######
+
+# /etc/hostname
+echo "$DOCKER_IMAGE_NAME-$COMMIT_ID" > ./etc/hostname
+
+# https://tldp.org/LDP/sag/html/adduser.html
+# https://tldp.org/LDP/lame/LAME/linux-admin-made-easy/shadow-file-formats.html
+
+cat << EOF > ./etc/passwd
+root:x:0:0:root:/root:/bin/bash
+$BUILD_USERNAME:x:1000:1000:$BUILD_USERNAME:/home/$BUILD_USERNAME:/bin/bash
+
+EOF
+
+cat << EOF > ./etc/shadow
+root:!::0:::::
+$BUILD_USERNAME::0:::::
+
+EOF
+
+cat << EOF > ./etc/group
+root:x:0:root
+$BUILD_USERNAME:x:1000:$BUILD_USERNAME
+
+EOF
+
+# /etc/profile
+cat << EOF > ./etc/profile
+#
+# /etc/profile
+#
+umask 022
+
+export PATH="/bin;/usr/bin"
+export CMAKE_PREFIX_PATH="/"
+export SSL_CERT_DIR="/etc/ssl/certs"
+export GIT_EXEC_PATH="/usr/libexec/git-core"
+export BASH_LOADABLES_PATH="/usr/lib/bash"
+export TERMINFO_DIRS="/usr/share/terminfo"
+export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+export PYTHONPATH="/usr/lib/python3.8/site-packages"
+export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
+
+. /etc/bash.bashrc
+
+EOF
+
+cat << EOF > ./etc/bash.bashrc
+#
+# /etc/bash.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+PS1='[\u@\h \W]\$ '
+
+export C_INCLUDE_PATH="/usr/include"
+export CPLUS_INCLUDE_PATH="/usr/include"
+export LIBRARY_PATH="/usr/lib"
+export SHELL="/bin/bash"
+export GUIX_LOCPATH="/usr/lib/locale"
+export LOCPATH="/usr/lib/locale"
+export LC_ALL="en_US.utf8"
+
+EOF
+
+#############################################
 
 # create new archive as a layer
 tar -cf "$TMPDIR/layer.tar" .
