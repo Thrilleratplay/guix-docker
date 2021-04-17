@@ -153,9 +153,27 @@ class DockerImageMetadata:
         SSL_SET = False
         TERMINFO = False
 
-        env.append("PATH=/bin")
+        # env.append("PATH=/bin")
+        # env.append("CMAKE_PREFIX_PATH=/")
+        # env.append("PKG_CONFIG_PATH=/lib/pkgconfig")
+
+        # TODO: find way to keep this synced with /etc/
+        env.append("PATH=/bin:/usr/bin")
         env.append("CMAKE_PREFIX_PATH=/")
-        env.append("PKG_CONFIG_PATH=/lib/pkgconfig")
+        env.append("SSL_CERT_DIR=/etc/ssl/certs")
+        env.append("GIT_EXEC_PATH=/usr/libexec/git-core")
+        env.append("BASH_LOADABLES_PATH=/usr/lib/bash")
+        env.append("TERMINFO_DIRS=/usr/share/terminfo")
+        env.append("PKG_CONFIG_PATH=/usr/lib/pkgconfig")
+        env.append("PYTHONPATH=/usr/lib/python3.8/site-packages")
+        env.append("GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt")
+        env.append("C_INCLUDE_PATH=/usr/include")
+        env.append("CPLUS_INCLUDE_PATH=/usr/include")
+        env.append("LIBRARY_PATH=/usr/lib")
+        env.append("SHELL=/bin/bash")
+        env.append("GUIX_LOCPATH=/usr/lib/locale")
+        env.append("LOCPATH=/usr/lib/locale")
+        env.append("LC_ALL=en_US.utf8")
 
         for file in tarball:
             split_path: List[str] = os.path.dirname(file.name).lstrip("./").split("/")
