@@ -18,6 +18,18 @@ export LC_ALL=en_US.utf8
 
 #############################################################################
 
+cat << EOF > /root/.config/guix/channels.scm
+(list (channel
+        (name 'guix)
+        (url "https://git.savannah.gnu.org/git/guix.git")
+        (commit  "$COMMIT_ID"))
+      (channel
+        (name 'heads)
+        (url "https://github.com/daym/heads-guix.git")
+        (branch "wip")))
+
+EOF
+
 # Start Guix daemon
 /root/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild --disable-chroot &
 
@@ -28,18 +40,16 @@ guix pull --system=$BUILD_FOR_SYSTEM --commit="$COMMIT_ID"
 
 # update profile
 export GUIX_PROFILE="/root/.config/guix/current"
-#
 
 # shellcheck disable=SC1091
 . "/root/.config/guix/current/etc/profile"
 
 # Find date of commit.
 # shellcheck disable=SC2012
-LATEST_CHECKOUT=$(ls --group-directories-first -t /root/.cache/guix/checkouts/ | head -n1)
+LATEST_CHECKOUT=$(grep "git.savannah.gnu.org" /root/.cache/guix/checkouts/*/.git/config | awk -F"/" '{print $6}')
+
 cd "/root/.cache/guix/checkouts/$LATEST_CHECKOUT/" || exit
 CREATED_DATETIME=$(TZ=UTC git show --date=iso-strict-local --pretty='%cd' "$COMMIT_ID" | head -n1)
-
-git show --date=iso-strict-local --pretty='%cd' "$COMMIT_ID"
 
 # Create TARBALL pack based on coreboot_packages.scm manifest
 LC_LANG=en_US.utf8 guix pack -f tarball \
@@ -144,7 +154,7 @@ cat << EOF > ./etc/profile
 #
 umask 022
 
-export PATH="/bin;/usr/bin"
+export PATH="/bin:/usr/bin"
 export CMAKE_PREFIX_PATH="/"
 export SSL_CERT_DIR="/etc/ssl/certs"
 export GIT_EXEC_PATH="/usr/libexec/git-core"
@@ -153,6 +163,13 @@ export TERMINFO_DIRS="/usr/share/terminfo"
 export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 export PYTHONPATH="/usr/lib/python3.8/site-packages"
 export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
+export C_INCLUDE_PATH="/usr/include"
+export CPLUS_INCLUDE_PATH="/usr/include"
+export LIBRARY_PATH="/usr/lib"
+export SHELL="/bin/bash"
+export GUIX_LOCPATH="/usr/lib/locale"
+export LOCPATH="/usr/lib/locale"
+export LC_ALL="en_US.utf8"
 
 . /etc/bash.bashrc
 
@@ -167,14 +184,6 @@ cat << EOF > ./etc/bash.bashrc
 [[ $- != *i* ]] && return
 
 PS1='[\u@\h \W]\$ '
-
-export C_INCLUDE_PATH="/usr/include"
-export CPLUS_INCLUDE_PATH="/usr/include"
-export LIBRARY_PATH="/usr/lib"
-export SHELL="/bin/bash"
-export GUIX_LOCPATH="/usr/lib/locale"
-export LOCPATH="/usr/lib/locale"
-export LC_ALL="en_US.utf8"
 
 EOF
 
