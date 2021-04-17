@@ -1,10 +1,22 @@
 (specifications->manifest
  '(
-  "busybox"
+  "bzip2"
+  "coreutils-minimal"
+  "diffutils"
+  "grep"
+  "patch"
+  "sed"
+  "tar"
+  "vim"
+  "wget"
+  "which"
+
+  "heads-zlib"
 
   "acpica"
   "automake"
-  "bash-minimal"
+  ; "bash-minimal"
+  "bash"
   "bc"
   "binutils"
   "bison"
@@ -38,5 +50,4 @@
   "readline"
   "util-linux"
   "xz"
-  "zlib"
 ))
