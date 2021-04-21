@@ -146,34 +146,30 @@ class DockerImageMetadata:
     def generate_env_list(self, tarball: tarfile.TarFile) -> List[str]:
         """Set env list."""
         env: List[str] = []
-        PATH_SET = False
         BASH_SET = False
         GIT_SET = False
         PYTHON_SET = False
         SSL_SET = False
         TERMINFO = False
 
-        # env.append("PATH=/bin")
-        # env.append("CMAKE_PREFIX_PATH=/")
-        # env.append("PKG_CONFIG_PATH=/lib/pkgconfig")
-
         # TODO: find way to keep this synced with /etc/
-        env.append("PATH=/bin:/usr/bin")
-        env.append("CMAKE_PREFIX_PATH=/")
-        env.append("SSL_CERT_DIR=/etc/ssl/certs")
-        env.append("GIT_EXEC_PATH=/usr/libexec/git-core")
         env.append("BASH_LOADABLES_PATH=/usr/lib/bash")
-        env.append("TERMINFO_DIRS=/usr/share/terminfo")
+        env.append("C_INCLUDE_PATH=/usr/include")
+        env.append("CFLAGS=-I/usr/include -L/usr/lib")
+        env.append("CMAKE_PREFIX_PATH=/")
+        env.append("CPLUS_INCLUDE_PATH=/usr/include")
+        env.append("GIT_EXEC_PATH=/usr/libexec/git-core")
+        env.append("GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt")
+        env.append("GUIX_LOCPATH=/usr/lib/locale")
+        env.append("LC_ALL=en_US.utf8")
+        env.append("LIBRARY_PATH=/usr/lib")
+        env.append("LOCPATH=/usr/lib/locale")
+        env.append("PATH=/bin:/usr/bin")
         env.append("PKG_CONFIG_PATH=/usr/lib/pkgconfig")
         env.append("PYTHONPATH=/usr/lib/python3.8/site-packages")
-        env.append("GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt")
-        env.append("C_INCLUDE_PATH=/usr/include")
-        env.append("CPLUS_INCLUDE_PATH=/usr/include")
-        env.append("LIBRARY_PATH=/usr/lib")
         env.append("SHELL=/bin/bash")
-        env.append("GUIX_LOCPATH=/usr/lib/locale")
-        env.append("LOCPATH=/usr/lib/locale")
-        env.append("LC_ALL=en_US.utf8")
+        env.append("SSL_CERT_DIR=/etc/ssl/certs")
+        env.append("TERMINFO_DIRS=/usr/share/terminfo")
 
         for file in tarball:
             split_path: List[str] = os.path.dirname(file.name).lstrip("./").split("/")
@@ -191,15 +187,6 @@ class DockerImageMetadata:
                         )
                     )
                     BASH_SET = True
-                # elif pkg_name.endswith("-profile") and not PATH_SET:
-                #     env.append(self.format_env_path("PATH", pkg_name, "bin"))
-                #     env.append(self.format_env_path("CMAKE_PREFIX_PATH", pkg_name))
-                #     env.append(
-                #         self.format_env_path(
-                #             "PKG_CONFIG_PATH", pkg_name, "lib/pkgconfig"
-                #         )
-                #     )
-                #     PATH_SET = True
                 elif "-git-minimal-" in pkg_name and not GIT_SET:
                     env.append(
                         self.format_env_path(
