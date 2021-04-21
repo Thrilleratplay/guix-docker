@@ -4,7 +4,8 @@
 
 # git ls-remote -h https://git.savannah.gnu.org/git/guix.git |grep 'refs/heads/master$' |awk '{ print $1 }'
 
-COMMIT_ID="${COMMIT_ID}"
+# COMMIT_ID="${COMMIT_ID}"
+
 BUILD_FOR_SYSTEM="${BUILD_FOR_SYSTEM:=i686-linux}"
 
 BUILD_USERNAME="${BUILD_USERNAME:=builduser}"
@@ -18,15 +19,12 @@ export LC_ALL=en_US.utf8
 
 #############################################################################
 
+# Specify channel as commit id
 cat << EOF > /root/.config/guix/channels.scm
 (list (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
-        (commit  "$COMMIT_ID"))
-      (channel
-        (name 'heads)
-        (url "https://github.com/daym/heads-guix.git")
-        (branch "wip")))
+        (commit  "$COMMIT_ID")))
 
 EOF
 
@@ -46,7 +44,10 @@ export GUIX_PROFILE="/root/.config/guix/current"
 
 # Find date of commit.
 # shellcheck disable=SC2012
-LATEST_CHECKOUT=$(grep "git.savannah.gnu.org" /root/.cache/guix/checkouts/*/.git/config | awk -F"/" '{print $6}')
+LATEST_CHECKOUT=$(ls --group-directories-first -t /root/.cache/guix/checkouts/ | head -n1)
+
+### NOTE: if multiple channels are defined, use this instead
+# LATEST_CHECKOUT=$(grep "git.savannah.gnu.org" /root/.cache/guix/checkouts/*/.git/config | awk -F"/" '{print $6}')
 
 cd "/root/.cache/guix/checkouts/$LATEST_CHECKOUT/" || exit
 CREATED_DATETIME=$(TZ=UTC git show --date=iso-strict-local --pretty='%cd' "$COMMIT_ID" | head -n1)
@@ -154,22 +155,24 @@ cat << EOF > ./etc/profile
 #
 umask 022
 
-export PATH="/bin:/usr/bin"
-export CMAKE_PREFIX_PATH="/"
-export SSL_CERT_DIR="/etc/ssl/certs"
-export GIT_EXEC_PATH="/usr/libexec/git-core"
 export BASH_LOADABLES_PATH="/usr/lib/bash"
-export TERMINFO_DIRS="/usr/share/terminfo"
+export C_INCLUDE_PATH="/usr/include"
+export CFLAGS="-I/usr/include -L/usr/lib"
+export CMAKE_PREFIX_PATH="/"
+export CPLUS_INCLUDE_PATH="/usr/include"
+export GIT_EXEC_PATH="/usr/libexec/git-core"
+export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
+export GUIX_LOCPATH="/usr/lib/locale"
+export LC_ALL="en_US.utf8"
+export LIBRARY_PATH="/usr/lib"
+export LOCPATH="/usr/lib/locale"
+export PATH="/bin:/usr/bin"
 export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 export PYTHONPATH="/usr/lib/python3.8/site-packages"
-export GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt"
-export C_INCLUDE_PATH="/usr/include"
-export CPLUS_INCLUDE_PATH="/usr/include"
-export LIBRARY_PATH="/usr/lib"
 export SHELL="/bin/bash"
-export GUIX_LOCPATH="/usr/lib/locale"
-export LOCPATH="/usr/lib/locale"
-export LC_ALL="en_US.utf8"
+export SSL_CERT_DIR="/etc/ssl/certs"
+export TERMINFO_DIRS="/usr/share/terminfo"
+
 
 . /etc/bash.bashrc
 
