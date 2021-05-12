@@ -151,6 +151,7 @@ docker run -it --name coreboot-build-env-container \
 
 ### TODO
 
+* Current blocker: configure zlib to be recognized by coreboot buildgcc
 * Verify coreboot can build in build environment, adjust package manifest as needed
 * Create a Bash script that wraps all of the steps and exposes command line flags.
 * create [OCI spec compliant image](https://github.com/opencontainers/image-spec)
